@@ -1,5 +1,6 @@
 package Crawler;
 
+import Models.Goods;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.jsoup.nodes.Document;
 
@@ -14,7 +15,9 @@ public class Manager implements IDataLayer {
     protected Stack<Document> documents = new Stack<Document>();
     protected Stack<String> urls = new Stack<String>();
     protected Stack<String> itemUrls = new Stack<String>();
+    protected Boolean working = true;
 
+    protected Goods goods = new Goods();
 
     public void run() {
 
@@ -33,7 +36,7 @@ public class Manager implements IDataLayer {
     }
 
     @Override
-    public Document popDocument() {
+    public synchronized Document popDocument() {
         if(documents.size() > 0) {
             Document document = documents.pop();
             System.out.println("Pop document: " + document.hashCode());
@@ -45,7 +48,7 @@ public class Manager implements IDataLayer {
     }
 
     @Override
-    public void pushNextUrl(String url) {
+    public synchronized void pushNextUrl(String url) {
         if(loadedUrls.contains(url) == false) {
             urls.push(url);
             loadedUrls.put(url, url);
@@ -55,7 +58,7 @@ public class Manager implements IDataLayer {
     }
 
     @Override
-    public String popNextUrl() {
+    public synchronized String popNextUrl() {
         if(urls.size() > 0) {
             String url = urls.pop();
             System.out.println("Pop url: " + url);
@@ -66,19 +69,42 @@ public class Manager implements IDataLayer {
         return null;
     }
 
+    @Override
     public void pushItemUrl(String url) {
         itemUrls.push(url);
-        System.out.println("Items url: "+ url);
+//        System.out.println("Items url: "+ url);
     }
 
+    @Override
     public String popItemUrl() {
         if(itemUrls.size() > 0) {
             String url = itemUrls.pop();
-            System.out.println("Items URL: " + url);
+//            System.out.println("Items URL: " + url);
 
             return url;
         }
 
         return null;
+    }
+
+    @Override
+    public void pushItem(String url, String jsonItem) {
+        goods.insert(url, jsonItem);
+        System.out.println("JSON: "+ jsonItem);
+    }
+
+    @Override
+    public String popItem() {
+        return null;
+    }
+
+    @Override
+    public void doNothing() {
+        working = false;
+    }
+
+    @Override
+    public Boolean canDoWork() {
+        return working;
     }
 }

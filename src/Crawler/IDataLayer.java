@@ -16,4 +16,10 @@ public interface IDataLayer {
     public void pushItemUrl(String url);
     public String popItemUrl();
 
+    public void pushItem(String url, String jsonItem);
+    public String popItem();
+
+    public void doNothing();
+    public Boolean canDoWork();
+
 }

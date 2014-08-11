@@ -1,9 +1,12 @@
 package Crawler;
 
-import org.jsoup.Jsoup;
+import Models.Goods;
+import com.google.gson.Gson;
+import com.sun.corba.se.impl.orbutil.ObjectWriter;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import sun.org.mozilla.javascript.internal.json.JsonParser;
 
 /**
  * Created by User on 10.08.2014.
@@ -23,12 +26,13 @@ public class Worker {
             threads[i] = new Thread(){
                 @Override
                 public void run() {
-                    while(true) {
+                    while (manager.canDoWork()) {
                         Document document = manager.popDocument();
 
                         if (document != null) {
                             parsePages(document);
                             parseItems(document);
+                            parseItem(document);
                         }
 
                         try {
@@ -44,12 +48,18 @@ public class Worker {
         }
     }
 
-    public void parsePages(Document document) {
+    public synchronized void parsePages(Document document) {
         Elements elements = document.select("#resultWrap .sort.top .pagination > a");
+        Element currentPage = document.select("#resultWrap .sort.top .pagination > *").last();
 
-        for(Element element: elements) {
-            String url = element.absUrl("href");
-            manager.pushNextUrl(url);
+        if(elements.size() > 0 && currentPage != null && currentPage.nodeName() == "span" && currentPage.hasClass("current-page"))
+            manager.doNothing();
+
+        if(elements.size() > 0) {
+            for (Element element : elements) {
+                String url = element.absUrl("href");
+                manager.pushNextUrl(url);
+            }
         }
     }
 
@@ -59,8 +69,20 @@ public class Worker {
         for(Element element: elements) {
             String itemUrl = element.absUrl("href");
             manager.pushItemUrl(itemUrl);
+            manager.pushNextUrl(itemUrl);
             //System.out.println("Item URL:"+ itemUrl);
         }
+    }
+
+    public void parseItem(Document document) {
+        Element element = document.select("#productStage h1.title").first();
+
+        if(element == null)
+            return ;
+
+        String titleH1 = element.text();
+        manager.pushItem(document.baseUri(), titleH1);
+
     }
 
 }

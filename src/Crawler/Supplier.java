@@ -22,7 +22,7 @@ public class Supplier {
             threads[i] = new Thread(){
                 @Override
                 public void run() {
-                    while(true) {
+                    while(manager.canDoWork()) {
                         String url = manager.popNextUrl();
 //                        System.out.print(url);
 
