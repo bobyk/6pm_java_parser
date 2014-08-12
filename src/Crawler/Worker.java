@@ -50,10 +50,6 @@ public class Worker {
 
     public synchronized void parsePages(Document document) {
         Elements elements = document.select("#resultWrap .sort.top .pagination > a");
-        Element currentPage = document.select("#resultWrap .sort.top .pagination > *").last();
-
-        if(elements.size() > 0 && currentPage != null && currentPage.nodeName() == "span" && currentPage.hasClass("current-page"))
-            manager.doNothing();
 
         if(elements.size() > 0) {
             for (Element element : elements) {
@@ -70,7 +66,7 @@ public class Worker {
             String itemUrl = element.absUrl("href");
             manager.pushItemUrl(itemUrl);
             manager.pushNextUrl(itemUrl);
-            //System.out.println("Item URL:"+ itemUrl);
+//            System.out.println("Item URL:"+ itemUrl);
         }
     }
 

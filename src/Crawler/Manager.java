@@ -4,6 +4,8 @@ import Models.Goods;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.jsoup.nodes.Document;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Stack;
 
@@ -15,9 +17,16 @@ public class Manager implements IDataLayer {
     protected Stack<Document> documents = new Stack<Document>();
     protected Stack<String> urls = new Stack<String>();
     protected Stack<String> itemUrls = new Stack<String>();
-    protected Boolean working = true;
-
     protected Goods goods = new Goods();
+
+    protected Boolean working = true;
+    protected Date date = new Date();
+    protected Integer timeOut = 5000;
+    protected Long lastPushNextUrlTime = null;
+
+    public Manager() {
+        dropTimer();
+    }
 
     public void run() {
 
@@ -33,11 +42,12 @@ public class Manager implements IDataLayer {
     public void pushDocument(Document document) {
         documents.push(document);
         System.out.println("Push document: "+ document.hashCode());
+        dropTimer();
     }
 
     @Override
-    public synchronized Document popDocument() {
-        if(documents.size() > 0) {
+    public Document popDocument() {
+        if(documents != null && documents.size() > 0) {
             Document document = documents.pop();
             System.out.println("Pop document: " + document.hashCode());
 
@@ -54,6 +64,8 @@ public class Manager implements IDataLayer {
             loadedUrls.put(url, url);
 
             System.out.println("Push url: " + url);
+
+            dropTimer();
         }
     }
 
@@ -67,6 +79,11 @@ public class Manager implements IDataLayer {
         }
 
         return null;
+    }
+
+    @Override
+    public Boolean issetNextUrl() {
+        return (urls.size() > 0);
     }
 
     @Override
@@ -99,12 +116,24 @@ public class Manager implements IDataLayer {
     }
 
     @Override
+    public void dropTimer() {
+        working = true;
+        lastPushNextUrlTime = date.getTime();
+    }
+
+    @Override
     public void doNothing() {
         working = false;
     }
 
     @Override
     public Boolean canDoWork() {
+
+        date = new Date();
+
+        if(lastPushNextUrlTime < (date.getTime() - timeOut))
+            working = false;
+
         return working;
     }
 }

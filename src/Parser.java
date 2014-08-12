@@ -12,6 +12,8 @@ public class Parser {
 
         Manager manager = new Manager();
         manager.pushNextUrl(
+//                "http://www.6pm.com/money-clips~1"
+//                "http://www.6pm.com/tri-folds~1"
                 "http://www.6pm.com/converse~1?s=isNew/desc/goLiveDate/desc/recentSalesStyle/desc/"
 //                "http://www.6pm.com/clothing~5B"
 //                "http://www.6pm.com/women-sneakers-athletic-shoes~f"

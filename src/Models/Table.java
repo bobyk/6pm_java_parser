@@ -7,8 +7,8 @@ import java.sql.*;
  */
 abstract public class Table {
 
-    protected Connection connection = null;
-    protected Statement statement = null;
+    protected static Connection connection = null;
+    protected static Statement statement = null;
 
     public Table() {
         try {
@@ -32,24 +32,24 @@ abstract public class Table {
         }
     }
 
-    public boolean insert() {
-        String query = "INSERT INTO goods (title) VALUES (?)";
-
-        try {
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setString(1, "title");
-            ps.executeUpdate();
-        }
-        catch(SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }
-
-//        statement.executeUpdate("INSERT INTO goods (title) VALUES ()");
-
-        return true;
-    }
+//    public boolean insert() {
+//        String query = "INSERT INTO goods (title) VALUES (?)";
+//
+//        try {
+//            PreparedStatement ps = connection.prepareStatement(query);
+//            ps.setString(1, "title");
+//            ps.executeUpdate();
+//        }
+//        catch(SQLException ex) {
+//            System.out.println("SQLException: " + ex.getMessage());
+//            System.out.println("SQLState: " + ex.getSQLState());
+//            System.out.println("VendorError: " + ex.getErrorCode());
+//        }
+//
+////        statement.executeUpdate("INSERT INTO goods (title) VALUES ()");
+//
+//        return true;
+//    }
 
     public void close() {
         try {
