@@ -1,7 +1,6 @@
 package Crawler;
 
 import Models.Goods;
-import com.google.gson.Gson;
 import com.sun.corba.se.impl.orbutil.ObjectWriter;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
